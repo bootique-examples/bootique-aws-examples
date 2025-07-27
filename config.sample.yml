@@ -1,4 +1,5 @@
 aws:
-  accessKey: "enter_the_actual_key"
-  secretKey: "enter_the_actual_key"
+  credentials:
+    accessKey: "enter_the_actual_key"
+    secretKey: "enter_the_actual_key"
   defaultRegion: "us-east-1"

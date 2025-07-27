@@ -1,60 +1,59 @@
-[![verify](https://github.com/bootique-examples/bootique-aws-demo/actions/workflows/verify.yml/badge.svg)](https://github.com/bootique-examples/bootique-aws-demo/actions/workflows/verify.yml)
+[![verify](https://github.com/bootique-examples/bootique-aws-examples/actions/workflows/verify.yml/badge.svg)](https://github.com/bootique-examples/bootique-aws-examples/actions/workflows/verify.yml)
 
-# bootique-aws-demo
+# Bootique 3.x AWS Examples
 
-A simple Bootique app demonstrating the usage of `bootique-aws` to access
-Amazone Web Services. Specifically shows how to access AWS S3 with
-`bootique-aws-s3`.
+A simple example of configuring and using an AWS S3 client in a [Bootique](http://bootique.io) app.
 
-You can find different versions of framework in use at
-* [1.x](https://github.com/bootique-examples/bootique-aws-demo/tree/1.x)
-* [2.x](https://github.com/bootique-examples/bootique-aws-demo/tree/2.x)
+Different Git branches contain example code for different versions of Bootique:
+* [3.x](https://github.com/bootique-examples/bootique-aws-examples/tree/3.x)
+* [2.x](https://github.com/bootique-examples/bootique-aws-examples/tree/2.x)
+* [1.x](https://github.com/bootique-examples/bootique-aws-examples/tree/1.x)
 
-## Building
 
+## Prerequisites
+
+To build and run the project, ensure you have the following installed on your machine:
+
+* Docker
+* Java 11 or newer
+* Maven
+* Access to an S3 bucket on AWS (for testing)
+
+and then follow these steps:
+
+## Checkout
 ```
-git clone git@github.com:bootique-examples/bootique-aws-demo.git
+git clone git@github.com:bootique-examples/bootique-aws-examples.git
+cd bootique-aws-examples
+```
+
+## Build and package
+
+Run the following command to build the code, run the tests and package the app:
+```
 mvn clean package
 ```
 
-## Configuration
+## Run
 
-Get an Amazon account that you can play with. Take a note of access key
-and secret key. Make a copy of the sample config file, and enter both keys
-in there:
+The following command prints a help message with supported options:
 
-```
-cp config.sample.yml config.yml
-
-# open config.yml in an editor and enter your keys and an AWS region for
-# which they have permissions.
+```bash  
+java -jar target/bootique-aws-examples-3.0.jar
 ```
 
-
-## Running
-
-To see available options, run the app with `--help`:
-
-```
-java -jar target/bootique-aws-demo-1.0-SNAPSHOT.jar  -h
-```
-
-To list a bucket contents run `--list` command:
+Get an Amazon account that you can play with. Take note of the access and secret keys. Copy `config.sample.yml` file 
+to `config.yml`. Put both keys in and the Bucket default region in `config.yml`. (Make sure the region matches the 
+bucket location). To list the bucket contents run the `--list` command:
 
 ```
-java -jar target/bootique-aws-demo-1.0-SNAPSHOT.jar \
-    -c config.yml \
-    -l \
-    -b mybucket
+java -jar target/bootique-aws-examples-3.0.jar -c config.yml -l -b mybucket
 ```
 
-To send a string of text to a bucket run `--send-text-to-s3` command:
+To store some text in a file in a bucket, run `--send-text-to-s3` command:
 
 ```
-java -jar target/bootique-aws-demo-1.0-SNAPSHOT.jar \
-    -c config.yml \
-    -s  \
-    -b mybucket/myfolder \
-    -t "hello aws" \
-    -f 'myfile.txt'
+java -jar target/bootique-aws-examples-3.0.jar -c config.yml -s -b mybucket -t "hello aws" -p 'somefolder/myfile.txt'
 ```
+
+You can rerun the list command again to check that the file got created.

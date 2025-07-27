@@ -1,9 +1,6 @@
-.classpath
-.project
 target
 .settings
 *.iml
 .idea
-derby.log
 dependency-reduced-pom.xml
 config.yml

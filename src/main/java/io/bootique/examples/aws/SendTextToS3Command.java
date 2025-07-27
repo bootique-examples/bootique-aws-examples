@@ -1,7 +1,9 @@
-package io.bootique.aws.demo;
+package io.bootique.examples.aws;
 
-import com.amazonaws.services.s3.AmazonS3;
-import com.google.inject.Provider;
+import io.bootique.aws2.s3.S3ClientFactory;
+import jakarta.inject.Provider;
+import software.amazon.awssdk.core.sync.RequestBody;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import io.bootique.cli.Cli;
 import io.bootique.command.CommandOutcome;
 import io.bootique.command.CommandWithMetadata;
@@ -13,10 +15,9 @@ public class SendTextToS3Command extends CommandWithMetadata {
     private static final String TEXT_OPTION = "text";
     private static final String PATH_OPTION = "path";
 
-
-    // AmazonS3 is actually injectable directly. Here we are storing a provider of AmazonS3 because we are within a
-    // command, and idiomatic way is to use lazy dependency resolution in commands.
-    private Provider<AmazonS3> s3Provider;
+    // While S3ClientFactory is injectable directly, here we are using a Provider for lazy initialization, as Commands
+    // are fully resolve when the help command is executed, and we need to postpone AWS stack initialization
+    private Provider<S3ClientFactory> s3ClientFactory;
 
     private static CommandMetadata createMetadata() {
         return CommandMetadata
@@ -27,31 +28,35 @@ public class SendTextToS3Command extends CommandWithMetadata {
                 .build();
     }
 
-    public SendTextToS3Command(Provider<AmazonS3> s3Provider) {
+    public SendTextToS3Command(Provider<S3ClientFactory> s3ClientFactory) {
         super(createMetadata());
-        this.s3Provider = s3Provider;
+        this.s3ClientFactory = s3ClientFactory;
     }
 
     @Override
     public CommandOutcome run(Cli cli) {
 
         String text = cli.optionString(TEXT_OPTION);
-        if(text == null) {
+        if (text == null) {
             return CommandOutcome.failed(-1, "No 'text' option is specified");
         }
 
-        String bucket = cli.optionString(S3Main.BUCKET_OPTION);
-        if(bucket == null) {
+        String bucket = cli.optionString(App.BUCKET_OPTION);
+        if (bucket == null) {
             return CommandOutcome.failed(-1, "No 'bucket' option is specified");
         }
 
         String path = cli.optionString(PATH_OPTION);
-        if(path == null) {
+        if (path == null) {
             return CommandOutcome.failed(-1, "No 'path' option is specified");
         }
 
-        AmazonS3 s3 = s3Provider.get();
-        s3.putObject(bucket, path, text);
+        PutObjectRequest request = PutObjectRequest.builder()
+                .bucket(bucket)
+                .key(path)
+                .build();
+
+        s3ClientFactory.get().client().putObject(request, RequestBody.fromString(text));
         return CommandOutcome.succeeded();
     }
 }
