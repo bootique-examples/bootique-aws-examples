@@ -53,7 +53,8 @@ java -jar target/bootique-aws-examples-3.0.jar -c config.yml -l -b mybucket
 To store some text in a file in a bucket, run `--send-text-to-s3` command:
 
 ```
-java -jar target/bootique-aws-examples-3.0.jar -c config.yml -s -b mybucket -t "hello aws" -p 'somefolder/myfile.txt'
+java -jar target/bootique-aws-examples-3.0.jar -c config.yml -s \
+   -b mybucket -t "hello aws" -p 'somefolder/myfile.txt'
 ```
 
 You can rerun the list command again to check that the file got created.
